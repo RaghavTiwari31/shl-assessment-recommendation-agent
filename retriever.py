@@ -22,11 +22,13 @@ from typing import Any, Optional
 
 from data_prep import load_catalog
 
+_INDEX_FILE = "shl_faiss.index"
+
 # ---------------------------------------------------------------------------
 # Module-level initialization (runs once at import / startup)
 # ---------------------------------------------------------------------------
 
-print("[retriever] Loading and indexing catalog — this runs once...")
+print("[retriever] Loading catalog for BM25 and ID mapping...")
 
 # Load clean catalog
 _CATALOG_LIST, _CATALOG_LOOKUP = load_catalog()
@@ -38,26 +40,31 @@ _TOKENIZED_CORPUS: list[list[str]] = [
 ]
 _BM25 = BM25Okapi(_TOKENIZED_CORPUS)
 
-# Dense embeddings via a lightweight sentence-transformer model.
-# 'all-MiniLM-L6-v2' (22M params, 80ms/batch) is a solid balance of speed & quality.
-_EMBED_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
-_DOC_TEXTS: list[str] = [item["doc_text"] for item in _CATALOG_LIST]
+_FAISS_INDEX = None
+_EMBED_MODEL = None
 
-print("[retriever] Encoding catalog documents for FAISS...")
-_EMBEDDINGS: np.ndarray = _EMBED_MODEL.encode(
-    _DOC_TEXTS,
-    batch_size=64,
-    show_progress_bar=False,
-    normalize_embeddings=True,   # Required for cosine similarity via inner product
-    convert_to_numpy=True,
-)
-_DIM: int = _EMBEDDINGS.shape[1]
+def _get_faiss_index() -> faiss.Index:
+    global _FAISS_INDEX
+    if _FAISS_INDEX is None:
+        import os
+        if not os.path.exists(_INDEX_FILE):
+            print(f"[retriever] {_INDEX_FILE} not found. Building offline index now...")
+            import build_index
+            build_index.build()
+        print(f"[retriever] Loading FAISS index from {_INDEX_FILE}...")
+        _FAISS_INDEX = faiss.read_index(_INDEX_FILE)
+    return _FAISS_INDEX
 
-# Build FAISS flat inner-product index (cosine sim on L2-normalized vectors)
-_FAISS_INDEX = faiss.IndexFlatIP(_DIM)
-_FAISS_INDEX.add(_EMBEDDINGS.astype(np.float32))
+def _get_embed_model() -> SentenceTransformer:
+    global _EMBED_MODEL
+    if _EMBED_MODEL is None:
+        print("[retriever] Lazy-loading SentenceTransformer model for query embedding...")
+        _EMBED_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
+    return _EMBED_MODEL
 
-print(f"[retriever] Indexes ready. BM25 + FAISS ({_N} docs, dim={_DIM}).")
+# Initialize FAISS during startup, but DO NOT load SentenceTransformer
+_get_faiss_index()
+print(f"[retriever] Indexes ready. BM25 + FAISS ({_N} docs).")
 
 
 # ---------------------------------------------------------------------------
@@ -190,12 +197,15 @@ def search_shl_catalog(
     bm25_top_indices: list[int] = np.argsort(bm25_scores)[::-1][:bm25_candidates].tolist()
 
     # --- Dense search ---
-    query_vector = _EMBED_MODEL.encode(
+    model = _get_embed_model()
+    query_vector = model.encode(
         [query],
         normalize_embeddings=True,
         convert_to_numpy=True,
     ).astype(np.float32)
-    _, dense_top_indices_arr = _FAISS_INDEX.search(query_vector, dense_candidates)
+    
+    idx = _get_faiss_index()
+    _, dense_top_indices_arr = idx.search(query_vector, dense_candidates)
     dense_top_indices: list[int] = dense_top_indices_arr[0].tolist()
 
     # --- RRF Fusion ---

@@ -46,6 +46,8 @@ The project includes an automated evaluation harness that measures retrieval qua
 ```
 SHL_Project/
 ├── shl_product_catalog.json   # Raw SHL product catalog (input data)
+├── build_index.py             # Offline script to generate FAISS embeddings
+├── shl_faiss.index            # Precomputed FAISS index (binary)
 ├── data_prep.py               # Catalog filtering, normalization, test-type mapping
 ├── retriever.py               # BM25 + FAISS hybrid search with RRF
 ├── models.py                  # Pydantic request/response schemas
@@ -135,16 +137,17 @@ Save the file.
 You will see output like this:
 
 ```
+[retriever] Loading catalog for BM25 and ID mapping...
 [data_prep] Loaded 377 raw items.
 [data_prep] Filtered out 10 Job Solution(s): ...
 [data_prep] Clean catalog size: 367 Individual Test Solutions.
-[retriever] Encoding catalog documents for FAISS...
-[retriever] Indexes ready. BM25 + FAISS (367 docs, dim=384).
+[retriever] Loading FAISS index from shl_faiss.index...
+[retriever] Indexes ready. BM25 + FAISS (367 docs).
 Agent ready. Service is live.
 INFO: Uvicorn running on http://0.0.0.0:8000
 ```
 
-> ⏳ **Cold-start takes ~30 seconds** while the embedding model loads. The server is ready when you see "Service is live."
+> 💡 **Note:** The server boot is instantaneous, but the very first `POST /chat` search query may take ~5 seconds as it lazy-loads the PyTorch embedding model into memory.
 
 ---
 
@@ -332,7 +335,7 @@ docker run -p 8000:8000 -e GROQ_API_KEY=your_key_here shl-advisor
 | `503 UNAVAILABLE` | Groq model temporarily overloaded. The agent auto-retries (5s, 10s, 20s) |
 | Server doesn't start | Check Python version is 3.11+ with `python --version` |
 | `ModuleNotFoundError` | Run `pip install -r requirements.txt` inside the activated venv |
-| Slow first response | Normal — FAISS index builds in memory on startup (~30 seconds) |
+| Slow first query response | Normal — `SentenceTransformer` lazy-loads on the very first search |
 
 ---
 
