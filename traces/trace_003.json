@@ -1,0 +1,21 @@
+{
+  "id": "trace_003",
+  "description": "Senior data analyst — SQL and analytical skills",
+  "persona": "You are a hiring manager at a data-driven e-commerce company looking for a senior data analyst.",
+  "facts": {
+    "role": "Senior data analyst",
+    "seniority": "Manager",
+    "experience_years": 7,
+    "skills_to_assess": ["SQL", "data analysis", "numerical reasoning", "Excel"],
+    "remote_ok": true,
+    "preferences": "no preference on language"
+  },
+  "expected_assessments": [
+    "SQL (New)",
+    "SQL Server (New)",
+    "Microsoft SQL Server 2014 Programming",
+    "Automata - SQL (New)",
+    "Microsoft Excel 2016",
+    "Numerical Reasoning"
+  ]
+}

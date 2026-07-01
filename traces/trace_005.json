@@ -1,0 +1,20 @@
+{
+  "id": "trace_005",
+  "description": "Customer service manager — remote team leader, behavioral and competency assessment",
+  "persona": "You are an HR director at a telecommunications company hiring a manager for a remote customer service team.",
+  "facts": {
+    "role": "Customer service manager",
+    "seniority": "Front Line Manager",
+    "experience_years": 5,
+    "skills_to_assess": ["leadership", "communication", "emotional intelligence", "remote work competencies", "customer focus"],
+    "remote_ok": true,
+    "preferences": "English-language assessments only"
+  },
+  "expected_assessments": [
+    "OPQ32r",
+    "RemoteWorkQ Manager Report",
+    "OPQ Manager Plus Report 2.0",
+    "Universal Competency Framework Job profiling guide",
+    "Motivation Questionnaire (MQ)"
+  ]
+}

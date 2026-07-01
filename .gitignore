@@ -1,0 +1,28 @@
+# Environment secrets — NEVER commit
+.env
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Evaluation output (not needed in repo)
+eval_report.json
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Project planning & Original specs (Not for submission)
+SHL_AI_Intern_Assignment.pdf
+project_findings_and_flow.txt
+smoke_test_logs.json

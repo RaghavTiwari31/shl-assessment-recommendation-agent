@@ -1,0 +1,21 @@
+{
+  "id": "trace_004",
+  "description": "Graduate management trainee — general cognitive and competencies",
+  "persona": "You are a talent acquisition specialist at a large consulting firm running a graduate recruitment program.",
+  "facts": {
+    "role": "Management trainee / graduate hire",
+    "seniority": "Graduate",
+    "experience_years": 0,
+    "skills_to_assess": ["cognitive ability", "verbal reasoning", "numerical reasoning", "competencies", "leadership potential"],
+    "remote_ok": true,
+    "preferences": "adaptive testing preferred if available"
+  },
+  "expected_assessments": [
+    "Verify Verbal Ability",
+    "Verify Numerical Ability",
+    "Verify Inductive Reasoning",
+    "OPQ32r",
+    "HiPo Assessment Report 1.0",
+    "Global Skills Assessment"
+  ]
+}

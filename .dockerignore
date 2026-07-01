@@ -1,0 +1,38 @@
+# Git / version control
+.git
+.gitignore
+
+# Virtual environment — never copy into Docker image
+venv/
+.venv/
+env/
+
+# Local environment secrets
+.env
+
+# Evaluation artefacts (not needed at runtime)
+traces/
+eval_report.json
+smoke_test.py
+test_recall.py
+evaluator.py
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Documentation source (not needed at runtime)
+*.md
+*.txt
+*.pdf
+approach_document.md
+project_findings_and_flow.txt

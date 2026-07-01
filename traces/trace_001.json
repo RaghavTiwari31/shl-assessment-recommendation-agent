@@ -1,0 +1,20 @@
+{
+  "id": "trace_001",
+  "description": "Mid-level Java backend developer",
+  "persona": "You are a technical recruiter at a fintech company. You need to assess candidates for a Java backend developer role.",
+  "facts": {
+    "role": "Java backend developer",
+    "seniority": "Mid-Professional",
+    "experience_years": 4,
+    "skills_to_assess": ["Java programming", "software design", "object-oriented principles"],
+    "remote_ok": true,
+    "preferences": "no preference on assessment duration"
+  },
+  "expected_assessments": [
+    "Java 8 (New)",
+    "Core Java (Advanced Level) (New)",
+    "Java Design Patterns (New)",
+    "Automata - Fix (New)",
+    "Automata (New)"
+  ]
+}

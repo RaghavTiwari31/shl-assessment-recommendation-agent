@@ -1,0 +1,20 @@
+{
+  "id": "trace_002",
+  "description": "Entry-level sales representative — personality and situational judgment",
+  "persona": "You are an HR manager at a retail company hiring entry-level sales reps.",
+  "facts": {
+    "role": "Sales representative",
+    "seniority": "Entry-Level",
+    "experience_years": 0,
+    "skills_to_assess": ["personality", "sales behavior", "situational judgment", "motivation"],
+    "remote_ok": false,
+    "preferences": "short assessments preferred, under 30 minutes"
+  },
+  "expected_assessments": [
+    "Sales Transformation Report 1.0 - Sales Manager",
+    "Sales Transformation Report 2.0 - Sales Manager",
+    "Sales Transformation 2.0 - Individual Contributor",
+    "OPQ32r",
+    "Dependability and Safety Instrument (DSI)"
+  ]
+}
