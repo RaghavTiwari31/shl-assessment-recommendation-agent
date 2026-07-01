@@ -1,7 +1,43 @@
 # SHL Assessment Advisor
 
 A stateless conversational AI agent for selecting SHL Individual Test Solutions.  
-Built for the SHL AI Intern Assignment.
+Developed as part of the SHL AI Intern Assignment.
+
+---
+
+## Live Demo
+- **Live API Base URL:** [https://shl-assessment-raghav-tiwari.onrender.com](https://shl-assessment-raghav-tiwari.onrender.com)
+- **Interactive Swagger Docs:** [https://shl-assessment-raghav-tiwari.onrender.com/docs](https://shl-assessment-raghav-tiwari.onrender.com/docs)
+
+> 💡 **Note:** The service is hosted on Render's free tier and may take 30–60 seconds to wake up after periods of inactivity.
+
+---
+
+## Overview
+The goal of this project is to provide a conversational interface for recruiters to discover the best SHL assessments for their hiring needs. It acts as an expert consultant, classifying user intents, executing hybrid searches against the SHL catalog, and returning grounded, strictly validated JSON recommendations within a guaranteed 8-turn conversation budget.
+
+---
+
+## Features
+- **Stateless RAG Architecture:** Fully stateless design allowing for infinite horizontal scaling and robust API performance.
+- **Intent-Driven Routing:** A 5-intent router (Clarify, Recommend, Compare, Refine, Refuse) prevents hallucination and ensures focused, relevant answers.
+- **Hybrid Search Engine:** Combines BM25 keyword search with FAISS semantic search using Reciprocal Rank Fusion (RRF) for high precision retrieval.
+- **Zero Hallucination Middleware:** Every generated assessment is strictly cross-referenced against the SHL catalog before being returned to the user.
+- **Self-Play Evaluator:** A fully automated evaluation harness (`test_scripts/evaluator.py`) to grade the agent using Recall@10 against simulated user traces.
+
+---
+
+## Tech Stack
+- **Backend Framework:** FastAPI (Python 3.11)
+- **LLM Provider:** Groq (`llama-3.3-70b-versatile`) — *The application uses Groq-hosted Llama 3.3 70B for fast, accurate inference.*
+- **Vector Search:** FAISS & Sentence-Transformers (`all-MiniLM-L6-v2`)
+- **Keyword Search:** Rank-BM25
+- **Deployment:** Render (Native Python) + Docker support
+
+---
+
+## Evaluation
+The project includes an automated evaluation harness that measures retrieval quality (Recall@10) and validates conversational behavior through simulated user traces.
 
 ---
 
@@ -29,7 +65,7 @@ SHL_Project/
 
 ---
 
-## Step-by-Step: Running Locally
+## Getting Started
 
 ### Step 1 — Prerequisites
 
@@ -217,7 +253,9 @@ Response:
 | P | Personality & Behavior |
 | S | Simulations |
 
-> Interactive API docs available at: `http://localhost:8000/docs`
+> Interactive API docs available at: 
+> - **Local:** `http://localhost:8000/docs`
+> - **Production:** `https://shl-assessment-raghav-tiwari.onrender.com/docs`
 
 ---
 
@@ -227,14 +265,11 @@ Render supports native Python apps — no Docker required.
 
 ### Step 1 — Push your project to GitHub
 
-Create a new GitHub repo and push the project:
+Clone the repository to your local machine:
 
 ```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/<your-username>/shl-advisor.git
-git push -u origin main
+git clone https://github.com/RaghavTiwari31/shl-assessment-recommendation-agent.git
+cd shl-assessment-recommendation-agent
 ```
 
 > **Important:** Make sure `.env` is in your `.gitignore` — never commit your API key.
@@ -273,10 +308,18 @@ In the Render dashboard:
 ### Step 4 — Deploy
 
 Click **Deploy**. Render builds and starts the service.  
-Your live URL will be: `https://shl-assessment-advisor.onrender.com`
+Your live URL will be: `https://shl-assessment-raghav-tiwari.onrender.com`
 
-> ⏳ **First deploy takes ~3 minutes** (dependency install + embedding model download).  
-> The `/health` endpoint confirms readiness.
+---
+
+## Docker Deployment (Optional)
+
+The project includes a multi-stage `Dockerfile` optimized for small footprint deployments. While the Render deployment uses the native Python runtime, you can easily containerize the app for local execution or other cloud providers:
+
+```bash
+docker build -t shl-advisor .
+docker run -p 8000:8000 -e GROQ_API_KEY=your_key_here shl-advisor
+```
 
 ---
 
@@ -285,7 +328,7 @@ Your live URL will be: `https://shl-assessment-advisor.onrender.com`
 | Problem | Fix |
 |---|---|
 | `GROQ_API_KEY not found` | Make sure `.env` file exists and has the key set |
-| `429 RESOURCE_EXHAUSTED` | Free-tier Groq quota hit. Wait for reset |
+| `429 Too Many Requests` | Free-tier Groq quota hit. Wait for reset |
 | `503 UNAVAILABLE` | Groq model temporarily overloaded. The agent auto-retries (5s, 10s, 20s) |
 | Server doesn't start | Check Python version is 3.11+ with `python --version` |
 | `ModuleNotFoundError` | Run `pip install -r requirements.txt` inside the activated venv |
@@ -318,3 +361,9 @@ ChatResponse
 ```
 
 See [`docs/approach_document.md`](docs/approach_document.md) for the full technical write-up.
+
+---
+
+## License
+
+This project was developed exclusively as a technical submission for the **SHL AI Intern Assignment**.

@@ -6,7 +6,7 @@
 #                      Result image is ~30% smaller.
 #
 # Build:  docker build -t shl-advisor .
-# Run:    docker run -p 8000:8000 -e GEMINI_API_KEY=<key> shl-advisor
+# Run:    docker run -p 8000:8000 -e GROQ_API_KEY=<key> shl-advisor
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ---------- Stage 1: dependency builder ----------
@@ -51,9 +51,9 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=5 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
 
-# GEMINI_API_KEY must be passed at runtime via -e or a secrets manager.
+# GROQ_API_KEY must be passed at runtime via -e or a secrets manager.
 # Never bake the key into the image.
-ENV GEMINI_API_KEY=""
+ENV GROQ_API_KEY=""
 
 # Use a non-root user for security
 RUN adduser --disabled-password --gecos "" appuser
