@@ -86,7 +86,7 @@ Each product is indexed as a concatenated document:
 
 **BM25 (keyword):** Captures exact terminology ("OPQ", "Verify", specific technology names like "Java 8"). Built using `rank_bm25`.
 
-**Dense (semantic):** `sentence-transformers/all-MiniLM-L6-v2` encodes all 367 documents into 384-dimensional vectors stored in a FAISS `IndexFlatIP` (inner product / cosine similarity). Handles paraphrases and synonyms ("personality test" ↔ "OPQ", "cognitive" ↔ "reasoning").
+**Dense (semantic):** `sentence-transformers/all-MiniLM-L6-v2` encodes all 367 documents into 384-dimensional vectors stored in a FAISS `IndexFlatIP` (inner product / cosine similarity). Handles paraphrases and synonyms ("personality test" ↔ "OPQ", "cognitive" ↔ "reasoning"). To satisfy tight memory constraints (e.g., Render's 512MB free tier), embeddings are generated **offline** (`build_index.py`), and the resulting `shl_faiss.index` binary is loaded at startup. The `SentenceTransformer` model is **lazy-loaded** into RAM only when the first search query arrives.
 
 **Reciprocal Rank Fusion (RRF):** Scores from both systems are merged with `score = 1/(k + rank)` where `k=60`. RRF is parameter-free, robust to score scale differences, and consistently outperforms linear combination in information retrieval benchmarks.
 
@@ -129,7 +129,7 @@ This ensures the `hard-eval` constraint — "items from catalog only" — can ne
 ```json
 {"status": "ok"}
 ```
-Returns HTTP 200 when the service is ready. Cold-start (index building + embedding model load) takes ~30 seconds; the evaluator allows 2 minutes.
+Returns HTTP 200 when the service is ready. Cold-start is nearly instantaneous because the FAISS index is loaded directly from a precomputed binary file. (Note: The very first `POST /chat` search query may take ~5 seconds as the PyTorch embedding model lazy-loads).
 
 ### `POST /chat`
 **Request:**
@@ -185,7 +185,7 @@ The service is containerized via a multi-stage `Dockerfile`. Environment variabl
 |---|---|
 | Stateless API | Required by assignment; simplifies horizontal scaling |
 | RRF over weighted sum | No calibration needed; robust across query types |
-| In-memory FAISS | Eliminates external vector DB dependency; 367 docs fit comfortably in RAM |
+| Precomputed in-memory FAISS | Eliminates external vector DB dependency; offline generation prevents OOM on Render 512MB tier |
 | `llama-3.3-70b-versatile` | Fast, high-quality open-weights model; excellent for RAG |
 | Validation middleware | Prevents hallucination from ever reaching the hard-eval; zero-cost safety net |
 | Force-RECOMMEND at turn 6 | Guarantees 8-turn budget compliance without complex state machine |
