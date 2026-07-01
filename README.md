@@ -15,13 +15,16 @@ SHL_Project/
 ├── models.py                  # Pydantic request/response schemas
 ├── agent.py                   # Intent router + Groq pipeline + validation middleware
 ├── main.py                    # FastAPI app (GET /health, POST /chat)
-├── evaluator.py               # Self-play evaluation harness (Recall@10 + behavior probes)
-├── traces/                    # Evaluation trace JSON files
-├── smoke_test.py              # Quick 5-intent API smoke test
+├── test_scripts/              # Evaluation and testing suite
+│   ├── evaluator.py           # Self-play evaluation harness (Recall@10 + behavior probes)
+│   ├── traces/                # Evaluation trace JSON files
+│   ├── smoke_test.py          # Quick 5-intent API smoke test
+│   └── test_recall.py         # Unit test for metric logic
+├── docs/                      # Project documentation
+│   └── approach_document.md   # 2-page technical approach (assignment deliverable)
 ├── requirements.txt           # Python dependencies
 ├── render.yaml                # One-click Render deployment config
-├── .env.example               # Environment variable template
-└── approach_document.md       # 2-page technical approach (assignment deliverable)
+└── .env.example               # Environment variable template
 ```
 
 ---
@@ -114,7 +117,7 @@ INFO: Uvicorn running on http://0.0.0.0:8000
 Open a **second terminal** (keep the server running in the first), activate the venv, and run:
 
 ```powershell
-.\venv\Scripts\python smoke_test.py
+.\venv\Scripts\python test_scripts/smoke_test.py
 ```
 
 Expected output:
@@ -145,13 +148,13 @@ With the server still running in terminal 1:
 
 ```powershell
 # Full evaluation (all traces + behavior probes)
-.\venv\Scripts\python evaluator.py
+.\venv\Scripts\python test_scripts/evaluator.py
 
 # Faster — skip behavior probes
-.\venv\Scripts\python evaluator.py --skip-probes
+.\venv\Scripts\python test_scripts/evaluator.py --skip-probes
 
 # Quiet mode — no per-turn conversation output
-.\venv\Scripts\python evaluator.py --quiet
+.\venv\Scripts\python test_scripts/evaluator.py --quiet
 ```
 
 Results are saved to `eval_report.json`.
@@ -244,6 +247,9 @@ venv/
 __pycache__/
 *.pyc
 eval_report.json
+SHL_AI_Intern_Assignment.pdf
+project_findings_and_flow.txt
+smoke_test_logs.json
 ```
 
 ### Step 2 — Create a new Web Service on Render
@@ -311,4 +317,4 @@ POST /chat (full conversation history)
 ChatResponse
 ```
 
-See [`approach_document.md`](approach_document.md) for the full technical write-up.
+See [`docs/approach_document.md`](docs/approach_document.md) for the full technical write-up.

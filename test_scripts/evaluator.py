@@ -37,7 +37,7 @@ from dotenv import load_dotenv
 # Config
 # ---------------------------------------------------------------------------
 
-load_dotenv()
+load_dotenv(Path(__file__).parent.parent / ".env")
 _API_KEY = os.getenv("GROQ_API_KEY")
 if not _API_KEY:
     raise RuntimeError("GROQ_API_KEY not set in .env")
